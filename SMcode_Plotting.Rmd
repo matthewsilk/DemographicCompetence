@@ -1,0 +1,1125 @@
+---
+title: "Plotting Code"
+author: "Matthew Silk"
+date: "21/01/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Here we provide the relevant code for producing the plots of model results in the main text and supplementary materials.
+####We provide just one version here that can be adapted to plot the results of different orders of life-history events by the user.
+
+***
+
+####First make sure to save a file path or set the working directory to where the model outputs have been saved
+
+***
+
+###Input and format results from density-dependent transmission
+
+```{r read-in DD transmission results}
+
+#Read-in data
+
+dataS.2<-readRDS("MTdNS_0.2.rds")
+dataR.2<-readRDS("MTdNR_0.2.rds")
+dataSpr.2<-readRDS("MTdPRS_0.2.rds")
+dataRpr.2<-readRDS("MTdPRR_0.2.rds")
+
+dataS.3<-readRDS("MTdNS_0.3.rds")
+dataR.3<-readRDS("MTdNR_0.3.rds")
+dataSpr.3<-readRDS("MTdPRS_0.3.rds")
+dataRpr.3<-readRDS("MTdPRR_0.3.rds")
+
+dataS.4<-readRDS("MTdNS_0.4.rds")
+dataR.4<-readRDS("MTdNR_0.4.rds")
+dataSpr.4<-readRDS("MTdPRS_0.4.rds")
+dataRpr.4<-readRDS("MTdPRR_0.4.rds")
+
+dataS.5<-readRDS("MTdNS_0.5.rds")
+dataR.5<-readRDS("MTdNR_0.5.rds")
+dataSpr.5<-readRDS("MTdPRS_0.5.rds")
+dataRpr.5<-readRDS("MTdPRR_0.5.rds")
+
+dataS.6<-readRDS("MTdNS_0.6.rds")
+dataR.6<-readRDS("MTdNR_0.6.rds")
+dataSpr.6<-readRDS("MTdPRS_0.6.rds")
+dataRpr.6<-readRDS("MTdPRR_0.6.rds")
+
+dataS.7<-readRDS("MTdNS_0.7.rds")
+dataR.7<-readRDS("MTdNR_0.7.rds")
+dataSpr.7<-readRDS("MTdPRS_0.7.rds")
+dataRpr.7<-readRDS("MTdPRR_0.7.rds")
+
+dataS.8<-readRDS("MTdNS_0.8.rds")
+dataR.8<-readRDS("MTdNR_0.8.rds")
+dataSpr.8<-readRDS("MTdPRS_0.8.rds")
+dataRpr.8<-readRDS("MTdPRR_0.8.rds")
+
+################################################
+################################################
+
+#Create dataframe
+
+betas<-seq(0.006,0.0095,0.0005)
+phi<-seq(0,0.99,0.01)
+dds<-c(0.00001,0.000025,0.00005,0.0001,0.00025,0.0005,0.001,0.0025,0.005,0.01)
+
+beta.fr<-rep(betas,length(phi)*length(dds))
+phi.fr<-rep(rep(phi,each=length(betas)),length(dds))
+dd.fr<-rep(dds,each=length(betas)*length(phi))
+h_surv<-rep(0.2,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataS.2)
+PR<-as.vector(dataSpr.2)
+
+fulldat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(fulldat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+fulldat$Beta[fulldat$Beta>0.0089&fulldat$Beta<0.0091]<-0.009
+
+h_surv<-rep(0.3,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataS.3)
+PR<-as.vector(dataSpr.3)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+h_surv<-rep(0.4,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataS.4)
+PR<-as.vector(dataSpr.4)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+h_surv<-rep(0.5,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataS.5)
+PR<-as.vector(dataSpr.5)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+h_surv<-rep(0.6,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataS.6)
+PR<-as.vector(dataSpr.6)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+h_surv<-rep(0.7,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataS.7)
+PR<-as.vector(dataSpr.7)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+h_surv<-rep(0.8,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataS.8)
+PR<-as.vector(dataSpr.8)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+
+h_surv<-rep(0.2,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataR.2)
+PR<-as.vector(dataRpr.2)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+h_surv<-rep(0.3,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataR.3)
+PR<-as.vector(dataRpr.3)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+h_surv<-rep(0.4,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataR.4)
+PR<-as.vector(dataRpr.4)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+h_surv<-rep(0.5,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataR.5)
+PR<-as.vector(dataRpr.5)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+
+h_surv<-rep(0.6,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataR.6)
+PR<-as.vector(dataRpr.6)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+
+h_surv<-rep(0.7,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataR.7)
+PR<-as.vector(dataRpr.7)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+h_surv<-rep(0.8,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("D",8000)
+N<-as.vector(dataR.8)
+PR<-as.vector(dataRpr.8)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat<-rbind(fulldat,tmpdat)
+
+#That's the fulldataset collated for density-dependent transmission
+
+################################################
+################################################
+
+###and the same for infinities
+fulldat$Prev[fulldat$Prev==Inf]<-0
+fulldat$Prev[fulldat$Prev==-Inf]<-0
+
+fulldat$HC[fulldat$HC==Inf]<-0
+fulldat$HC[fulldat$HC==-Inf]<-0
+
+#Here we add relevant NAs in situations where unstable dynamics resulted
+
+fulldat$N[fulldat$DD_int>0.0025&fulldat$DD_type=="S"&fulldat$Host_Surv==0.2]<-fulldat$Prev[fulldat$DD_int>0.0025&fulldat$DD_type=="S"&fulldat$Host_Surv==0.2]<-fulldat$HC[fulldat$DD_int>0.0025&fulldat$DD_type=="S"&fulldat$Host_Surv==0.2]<-NA
+
+fulldat$N[fulldat$DD_int>0.005&fulldat$DD_type=="S"&fulldat$Host_Surv<0.6]<-fulldat$Prev[fulldat$DD_int>0.005&fulldat$DD_type=="S"&fulldat$Host_Surv<0.6]<-fulldat$HC[fulldat$DD_int>0.005&fulldat$DD_type=="S"&fulldat$Host_Surv<0.6]<-NA
+
+```
+
+***
+
+```{read-in FD transmission results}
+
+#Read-in data
+
+dataS.2<-readRDS("MTfNS_0.2.rds")
+dataR.2<-readRDS("MTfNR_0.2.rds")
+dataSpr.2<-readRDS("MTfPRS_0.2.rds")
+dataRpr.2<-readRDS("MTfPRR_0.2.rds")
+
+dataS.3<-readRDS("MTfNS_0.3.rds")
+dataR.3<-readRDS("MTfNR_0.3.rds")
+dataSpr.3<-readRDS("MTfPRS_0.3.rds")
+dataRpr.3<-readRDS("MTfPRR_0.3.rds")
+
+dataS.4<-readRDS("MTfNS_0.4.rds")
+dataR.4<-readRDS("MTfNR_0.4.rds")
+dataSpr.4<-readRDS("MTfPRS_0.4.rds")
+dataRpr.4<-readRDS("MTfPRR_0.4.rds")
+
+dataS.5<-readRDS("MTfNS_0.5.rds")
+dataR.5<-readRDS("MTfNR_0.5.rds")
+dataSpr.5<-readRDS("MTfPRS_0.5.rds")
+dataRpr.5<-readRDS("MTfPRR_0.5.rds")
+
+dataS.6<-readRDS("MTfNS_0.6.rds")
+dataR.6<-readRDS("MTfNR_0.6.rds")
+dataSpr.6<-readRDS("MTfPRS_0.6.rds")
+dataRpr.6<-readRDS("MTfPRR_0.6.rds")
+
+dataS.7<-readRDS("MTfNS_0.7.rds")
+dataR.7<-readRDS("MTfNR_0.7.rds")
+dataSpr.7<-readRDS("MTfPRS_0.7.rds")
+dataRpr.7<-readRDS("MTfPRR_0.7.rds")
+
+dataS.8<-readRDS("MTfNS_0.8.rds")
+dataR.8<-readRDS("MTfNR_0.8.rds")
+dataSpr.8<-readRDS("MTfPRS_0.8.rds")
+dataRpr.8<-readRDS("MTfPRR_0.8.rds")
+
+################################################
+################################################
+
+#Create dataframe
+
+beta.fr<-rep(betas,length(phi)*length(dds))
+phi.fr<-rep(rep(phi,each=length(betas)),length(dds))
+dd.fr<-rep(dds,each=length(betas)*length(phi))
+h_surv<-rep(0.2,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataS.2)
+PR<-as.vector(dataSpr.2)
+
+fulldat_F<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(fulldat_F)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+fulldat_F$Beta[fulldat_F$Beta>0.0089&fulldat_F$Beta<0.0091]<-0.009
+
+h_surv<-rep(0.3,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataS.3)
+PR<-as.vector(dataSpr.3)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+h_surv<-rep(0.4,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataS.4)
+PR<-as.vector(dataSpr.4)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+h_surv<-rep(0.5,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataS.5)
+PR<-as.vector(dataSpr.5)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+h_surv<-rep(0.6,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataS.6)
+PR<-as.vector(dataSpr.6)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+h_surv<-rep(0.7,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataS.7)
+PR<-as.vector(dataSpr.7)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+h_surv<-rep(0.8,8000)
+dd_type<-rep("S",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataS.8)
+PR<-as.vector(dataSpr.8)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+
+h_surv<-rep(0.2,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataR.2)
+PR<-as.vector(dataRpr.2)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+h_surv<-rep(0.3,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataR.3)
+PR<-as.vector(dataRpr.3)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+h_surv<-rep(0.4,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataR.4)
+PR<-as.vector(dataRpr.4)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+h_surv<-rep(0.5,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataR.5)
+PR<-as.vector(dataRpr.5)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+
+h_surv<-rep(0.6,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataR.6)
+PR<-as.vector(dataRpr.6)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+
+h_surv<-rep(0.7,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataR.7)
+PR<-as.vector(dataRpr.7)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+h_surv<-rep(0.8,8000)
+dd_type<-rep("R",8000)
+transmission<-rep("F",8000)
+N<-as.vector(dataR.8)
+PR<-as.vector(dataRpr.8)
+
+tmpdat<-data.frame(beta.fr,phi.fr,dd.fr,h_surv,dd_type,transmission,N,PR,N*PR)
+names(tmpdat)<-c("Beta","Phi","DD_int","Host_Surv","DD_type","TR_type","N","Prev","HC")
+tmpdat$Beta[tmpdat$Beta>0.0089&tmpdat$Beta<0.0091]<-0.009
+
+fulldat_F<-rbind(fulldat_F,tmpdat)
+
+#That's the fulldataset collated for frequency-dependent transmission
+
+################################################
+################################################
+
+###Here we convert NaNs from the model run to zeroes where relevant
+fulldat_F$N[is.na(fulldat_F$N)==TRUE]<-0
+fulldat_F$Prev[is.na(fulldat_F$Prev)==TRUE]<-0
+fulldat_F$HC[is.na(fulldat_F$HC)==TRUE]<-0
+
+###and the same for infinities
+fulldat_F$Prev[fulldat_F$Prev==Inf]<-0
+fulldat_F$Prev[fulldat_F$Prev==-Inf]<-0
+
+fulldat_F$HC[fulldat_F$HC==Inf]<-0
+fulldat_F$HC[fulldat_F$HC==-Inf]<-0
+
+#Here we add relevant NAs in situations where unstable dynamics resulted
+fulldat_F$N[fulldat_F$DD_int>0.0025&fulldat_F$DD_type=="S"&fulldat_F$Host_Surv==0.2]<-fulldat_F$Prev[fulldat_F$DD_int>0.0025&fulldat_F$DD_type=="S"&fulldat_F$Host_Surv==0.2]<-fulldat_F$HC[fulldat_F$DD_int>0.0025&fulldat_F$DD_type=="S"&fulldat_F$Host_Surv==0.2]<-NA
+fulldat_F$N[fulldat_F$DD_int>0.005&fulldat_F$DD_type=="S"&fulldat_F$Host_Surv<0.6]<-fulldat_F$Prev[fulldat_F$DD_int>0.005&fulldat_F$DD_type=="S"&fulldat_F$Host_Surv<0.6]<-fulldat_F$HC[fulldat_F$DD_int>0.005&fulldat_F$DD_type=="S"&fulldat_F$Host_Surv<0.6]<-NA
+
+```
+
+***
+***
+***
+
+###In this section we produce basic results figures. Figures S1-S4 from the manuscript
+
+First we set up the colour palette we want
+
+```{r Palette 1}
+
+library(viridis)
+pal<-colorRampPalette(c("navy","grey","yellow","orange","red","firebrick4"))
+cols<-pal(length(seq(0,1,0.005^2)))
+
+col.finders<-seq(0,1,0.005^2)
+
+```
+
+***
+
+Code for Figure S1
+
+```{r Fig S1}
+
+##DD recruitment and DD transmission
+par(mfrow=c(4,3),mar=c(2,3,0,0),bg="white",fg="black",bty="n")
+for(j in c(0.600,0.700,0.800,0.900)){
+  for(ii in c(0.007,0.008,0.009)){
+    diffs1<-fulldat[fulldat$TR_type=="D"&fulldat$DD_type=="R"&fulldat$Beta==ii&as.character(fulldat$Phi)==as.character(j),]
+    par(xpd=FALSE)
+    plot(NULL,xlim=c(0.15,0.85),ylim=c(0.5,10.5),xaxt="n",yaxt="n",ylab="",xlab="")
+    for(i in 1:nrow(diffs1)){
+        polygon(x=c(diffs1$Host_Surv[i]-0.05,diffs1$Host_Surv[i]-0.05,diffs1$Host_Surv[i]+0.05,diffs1$Host_Surv[i]+0.05),y=c(which(dds%in%diffs1$DD_int[i])-0.5,which(dds%in%diffs1$DD_int[i])+0.5,which(dds%in%diffs1$DD_int[i])+0.5,which(dds%in%diffs1$DD_int[i])-0.5),col=cols[which.min(abs(col.finders/(diffs1$HC[i]/100)-1))],border=NA)
+    }
+    par(xpd=NA)
+    if(j==0.900){
+      for(i in 1:length(seq(0.2,0.8,0.1))){
+        text(y=0,x=seq(0.2,0.8,0.1)[i],labels=seq(0.2,0.8,0.1)[i],cex=1.2)
+      }
+      text(y=-1,x=0.5,labels="Host survival rate",cex=1.5)
+    }
+    if(ii==0.007){
+      text(y=5.5,x=0.04,labels="Intensity of\ndensity-dependence",srt=90,cex=1.3)
+      arrows(x0=0.125,y0=1,x1=0.125,y1=10,length=0.1,angle=25,lwd=1)
+    }
+    text(x=0.25,y=1.5,labels="FAST",col="white",font=2,cex=1.2)
+    text(x=0.75,y=1.5,labels="SLOW",col="white",font=2,cex=1.2)
+  }
+}
+
+```
+
+***
+
+Code for Fig S2
+
+```{r Fig S2}
+
+##DD survival and DD transmission
+par(mfrow=c(4,3),mar=c(2,3,0,0),bg="white",fg="black",bty="n")
+for(j in c(0.600,0.700,0.800,0.900)){
+  for(ii in c(0.007,0.008,0.009)){
+    diffs1<-fulldat[fulldat$TR_type=="D"&fulldat$DD_type=="S"&fulldat$Beta==ii&as.character(fulldat$Phi)==as.character(j),]
+    par(xpd=FALSE)
+    plot(NULL,xlim=c(0.15,0.85),ylim=c(0.5,10.5),xaxt="n",yaxt="n",ylab="",xlab="")
+    for(i in 1:nrow(diffs1)){
+      polygon(x=c(diffs1$Host_Surv[i]-0.05,diffs1$Host_Surv[i]-0.05,diffs1$Host_Surv[i]+0.05,diffs1$Host_Surv[i]+0.05),y=c(which(dds%in%diffs1$DD_int[i])-0.5,which(dds%in%diffs1$DD_int[i])+0.5,which(dds%in%diffs1$DD_int[i])+0.5,which(dds%in%diffs1$DD_int[i])-0.5),col=cols[which.min(abs(col.finders/(diffs1$HC[i]/100)-1))],border=NA)
+    }
+    par(xpd=NA)
+    if(j==0.900){
+      for(i in 1:length(seq(0.2,0.8,0.1))){
+        text(y=0,x=seq(0.2,0.8,0.1)[i],labels=seq(0.2,0.8,0.1)[i],cex=1.2)
+      }
+      text(y=-1,x=0.5,labels="Host survival rate",cex=1.5)
+    }
+    if(ii==0.007){
+      text(y=5.5,x=0.04,labels="Intensity of\ndensity-dependence",srt=90,cex=1.3)
+      arrows(x0=0.125,y0=1,x1=0.125,y1=10,length=0.1,angle=25,lwd=1)
+    }
+    text(x=0.25,y=1.5,labels="FAST",col="white",font=2,cex=1.2)
+    text(x=0.75,y=1.5,labels="SLOW",col="white",font=2,cex=1.2)
+    
+  }
+}
+
+```
+
+***
+
+Code for Fig S3
+
+```{r Fig S3}
+
+##DD recruitment and FD transmission
+par(mfrow=c(4,3),mar=c(2,3,0,0),bg="white",fg="black",bty="n")
+for(j in c(0.600,0.700,0.800,0.900)){
+  for(ii in c(0.007,0.008,0.009)){
+    diffs1<-fulldat_F[fulldat_F$TR_type=="F"&fulldat_F$DD_type=="R"&fulldat_F$Beta==ii&as.character(fulldat_F$Phi)==as.character(j),]
+    par(xpd=FALSE)
+    plot(NULL,xlim=c(0.15,0.85),ylim=c(0.5,10.5),xaxt="n",yaxt="n",ylab="",xlab="")
+    for(i in 1:nrow(diffs1)){
+      polygon(x=c(diffs1$Host_Surv[i]-0.05,diffs1$Host_Surv[i]-0.05,diffs1$Host_Surv[i]+0.05,diffs1$Host_Surv[i]+0.05),y=c(which(dds%in%diffs1$DD_int[i])-0.5,which(dds%in%diffs1$DD_int[i])+0.5,which(dds%in%diffs1$DD_int[i])+0.5,which(dds%in%diffs1$DD_int[i])-0.5),col=cols[which.min(abs(col.finders/(diffs1$HC[i]/100)-1))],border=NA)
+    }
+    par(xpd=NA)
+    if(j==0.900){
+      for(i in 1:length(seq(0.2,0.8,0.1))){
+        text(y=0,x=seq(0.2,0.8,0.1)[i],labels=seq(0.2,0.8,0.1)[i],cex=1.2)
+      }
+      text(y=-1,x=0.5,labels="Host survival rate",cex=1.5)
+    }
+    if(ii==0.007){
+      text(y=5.5,x=0.04,labels="Intensity of\ndensity-dependence",srt=90,cex=1.3)
+      arrows(x0=0.125,y0=1,x1=0.125,y1=10,length=0.1,angle=25,lwd=1)
+    }
+    text(x=0.25,y=1.5,labels="FAST",col="white",font=2,cex=1.2)
+    text(x=0.75,y=1.5,labels="SLOW",col="white",font=2,cex=1.2)
+  }
+}
+
+```
+
+***
+
+Code for Fig S4
+
+```{r Fig S4}
+
+##DD survival and FD transmission
+par(mfrow=c(4,3),mar=c(2,3,0,0),bg="white",fg="black",bty="n")
+for(j in c(0.600,0.700,0.800,0.900)){
+  for(ii in c(0.007,0.008,0.009)){
+    diffs1<-fulldat_F[fulldat_F$TR_type=="F"&fulldat_F$DD_type=="S"&fulldat_F$Beta==ii&as.character(fulldat_F$Phi)==as.character(j),]
+    plot(NULL,xlim=c(0.15,0.85),ylim=c(0.5,10.5),xaxt="n",yaxt="n",ylab="",xlab="")
+    par(xpd=FALSE)
+    for(i in 1:nrow(diffs1)){
+      polygon(x=c(diffs1$Host_Surv[i]-0.05,diffs1$Host_Surv[i]-0.05,diffs1$Host_Surv[i]+0.05,diffs1$Host_Surv[i]+0.05),y=c(which(dds%in%diffs1$DD_int[i])-0.5,which(dds%in%diffs1$DD_int[i])+0.5,which(dds%in%diffs1$DD_int[i])+0.5,which(dds%in%diffs1$DD_int[i])-0.5),col=cols[which.min(abs(col.finders/(diffs1$HC[i]/100)-1))],border=NA)
+    }
+    par(xpd=NA)
+    if(j==0.900){
+    for(i in 1:length(seq(0.2,0.8,0.1))){
+      text(y=0,x=seq(0.2,0.8,0.1)[i],labels=seq(0.2,0.8,0.1)[i],cex=1.2)
+    }
+    text(y=-1,x=0.5,labels="Host survival rate",cex=1.5)
+    }
+    if(ii==0.007){
+    text(y=5.5,x=0.04,labels="Intensity of\ndensity-dependence",srt=90,cex=1.3)
+    arrows(x0=0.125,y0=1,x1=0.125,y1=10,length=0.1,angle=25,lwd=1)
+    }
+    text(x=0.25,y=1.5,labels="FAST",col="white",font=2,cex=1.2)
+    text(x=0.75,y=1.5,labels="SLOW",col="white",font=2,cex=1.2)
+  }
+}
+
+```
+
+***
+
+Scale bar for Figs S1-S4
+
+```{r scalebar 1}
+
+par(mfrow=c(1,1),bty="n")
+plot(x=col.finders*10000,y=rep(1,length(cols)),xaxt="n",yaxt="n",cex=5,pch=15,col=cols)
+par(xpd=NA)
+text(x=0,y=0.95,labels=0,cex=2.5,adj=c(1,0.5))
+text(x=0.2*10000,y=0.95,labels=0.2,cex=2.5,adj=c(0.8,0.5))
+text(x=0.4*10000,y=0.95,labels=0.4,cex=2.5,adj=c(0.6,0.5))
+text(x=0.6*10000,y=0.95,labels=0.6,cex=2.5,adj=c(0.4,0.5))
+text(x=0.8*10000,y=0.95,labels=0.8,cex=2.5,adj=c(0.2,0.5))
+text(x=1*10000,y=0.95,labels=1,cex=2.5,adj=c(0,0.5))
+
+```
+
+***
+***
+***
+
+###In this section we produce the main summary figures from the first section of the results (Figs. 2 and 4)
+
+*Please note that it is necessary to download the correct symbols from my github repository (detailed below) or change the code for the plots to run successfully*
+
+Code for figures 2 and 4 is currently set to save them as PDFs
+
+```{r Fig2and4 set-up}
+
+#Read-in skull symbols used in figures
+#These symbols can be downloaded from https://github.com/matthewsilk/skullsymbolsforR
+
+#remember to save them into the correct working directory or set the path name when reading them into R
+
+library(png)
+
+sk_bl_op<-readPNG("skull2.png")
+sk_bl_fi<-readPNG("skull2_fill.png")
+sk_re_op<-readPNG("skull2red.png")
+sk_re_fi<-readPNG("skull2red_fill.png")
+
+sk_gs<-readPNG("skull2gs.png",native=TRUE)
+
+#Define parameter values used in figures
+
+trans<-c(0.007,0.009)
+vir<-c(0.6,0.9)
+dd<-c(0.001,0.005)
+pchs<-c(21,21)
+
+```
+
+***
+
+Code to produce Figure 4
+
+```{r Fig 4}
+
+pdf("FDgraph.pdf",width=14,height=10,paper='special')
+
+par(mfrow=c(2,2),mar=c(5,5,2,2),xpd=FALSE)
+
+
+m1<-matrix(1,nr=10,nc=10)
+m2<-matrix(2,nr=10,nc=10)
+m3<-matrix(3,nr=10,nc=10)
+m4<-matrix(4,nr=10,nc=10)
+m<-rbind(cbind(m1,m2),cbind(m3,m4))
+m_y<-rbind(m,matrix(5,nr=1,nc=20))
+m_xy<-cbind(m_y,matrix(6,nr=21,nc=5))
+
+layout.matrix <- matrix(c(2, 1, 0, 3), nrow = 2, ncol = 2)
+
+layout(m_xy) # Widths of the two columns
+
+
+for(i in 1:length(vir)){
+  for(j in 1:length(trans)){
+    if(j==1){
+      par(mar=c(4,6,2,2))
+    }
+    if(j==2){
+      par(mar=c(4,3,2,5))
+    }
+    tmp_datDr<-fulldat_F[fulldat_F$Beta==trans[j]&fulldat_F$Phi==vir[i]&fulldat_F$DD_type=="R",]
+    tmp_datDs<-fulldat_F[fulldat_F$Beta==trans[j]&fulldat_F$Phi==vir[i]&fulldat_F$DD_type=="S",]
+    plot(NULL,xlim=c(0.15,0.85),ylim=c(0,1),las=1,ylab=ifelse(j==1,"Demographic Competence",""),xlab=ifelse(i==2,"Host Survival Rate",""),cex.lab=1.8,cex.axis=1.3)
+    l1=ifelse(i==1,"HIGH VIRULENCE","LOW VIRULENCE")
+    l2=ifelse(j==1,"LOW TRANSMISSIBILITY","HIGH TRANSMISSIBILITY")
+    text(x=0.5,y=0.97,labels=l1,cex=2)
+    text(x=0.5,y=0.9,labels=l2,cex=2)
+      mtext(text=ifelse(i==1&j==1,"a)",ifelse(i==1&j==2,"b)",ifelse(i==2&j==1,"c)","d)"))),side=3,line=-0.1,at=0.05,cex=1.5)
+    par(xpd=NA)
+    if(i==2){
+    polygon(x=c(0.15,0.25,0.25,0.15),y=c(-0.2,-0.2,-0.255,-0.255),col="black")
+    polygon(x=c(0.75,0.85,0.85,0.75),y=c(-0.2,-0.2,-0.255,-0.255),col="black")
+    text(x=0.2,y=-0.23,"FAST",col="white",font=2)
+    text(x=0.8,y=-0.23,"SLOW",col="white",font=2)
+    arrows(x0=0.3,y0=-0.23,x1=0.7,y1=-0.23,length=0.1,angle=30,code=3,col="black")
+    if(j==2){
+      lines(x=c(1.075,1.275),y=c(1.7,1.7),col="dodgerblue",lty=1,lwd=2)
+      lines(x=c(1.075,1.275),y=c(1.45,1.45),col="dodgerblue",lty=2,lwd=2)
+      lines(x=c(1.075,1.275),y=c(1.2,1.2),col="firebrick",lty=1,lwd=2)
+      lines(x=c(1.075,1.275),y=c(0.95,0.95),col="firebrick",lty=2,lwd=2)
+
+      points(x=1.175,y=1.7,pch=21,col="dodgerblue",bg="dodgerblue",lwd=2,cex=2.5)
+      points(x=1.175,y=1.45,pch=21,col="dodgerblue",bg="white",lwd=2,cex=2.5)
+      points(x=1.175,y=1.2,pch=21,col="firebrick",bg="firebrick",lwd=2,cex=2.5)
+      points(x=1.175,y=0.95,pch=21,col="firebrick",bg="white",lwd=2,cex=2.5)
+      rasterImage(sk_gs,1.145,0.66,1.205,0.74)
+      
+      text(x=1.175,y=1.64,"Strong reproduction-based regulation",cex=1.7)
+      text(x=1.175,y=1.39,"Weak reproduction-based regulation",cex=1.7)
+      text(x=1.175,y=1.14,"Strong survival-based regulation",cex=1.7)
+      text(x=1.175,y=0.89,"Weak survival-based regulation",cex=1.7)
+      text(x=1.175,y=0.6,"Host population extinct",cex=1.7)
+
+    }
+    }
+    par(xpd=FALSE)
+    for(k in 1:length(dd)){
+      tmp_datDr2<-tmp_datDr[tmp_datDr$DD_int==dd[k],]
+      tmp_datDs2<-tmp_datDs[tmp_datDs$DD_int==dd[k],]
+      lines(x=tmp_datDr2$Host_Surv,y=tmp_datDr2$HC/100,col="dodgerblue",lty=ifelse(k==1,2,1))
+      lines(x=tmp_datDs2$Host_Surv,y=tmp_datDs2$HC/100,col="firebrick",lty=ifelse(k==1,2,1))
+      #points(x=tmp_datDr2$Host_Surv,y=tmp_datDr2$HC/100,col="dodgerblue",bg=ifelse(k==1,"white","dodgerblue"),pch=pchs[k],cex=1.5,lwd=2)
+      #points(x=tmp_datDs2$Host_Surv,y=tmp_datDs2$HC/100,col="firebrick",bg=ifelse(k==1,"white","firebrick"),pch=pchs[k],cex=1.5,lwd=2)
+      tmp_x1=tmp_datDr2$Host_Surv
+      tmp_y1=tmp_datDr2$HC/100
+      tmp_x2=tmp_datDs2$Host_Surv
+      tmp_y2=tmp_datDs2$HC/100
+      for(m in 1:length(tmp_x1)){
+        if(round(tmp_datDr2$N[m])==0){
+          if(k==1){
+            rasterImage(sk_bl_op,tmp_x1[m]-0.03,tmp_y1[m]-0.04,tmp_x1[m]+0.03,tmp_y1[m]+0.04)
+          }
+          if(k==2){
+            rasterImage(sk_bl_fi,tmp_x1[m]-0.03,tmp_y1[m]-0.04,tmp_x1[m]+0.03,tmp_y1[m]+0.04)
+          }
+        }
+        if(is.na(tmp_datDs2$N[m])==FALSE&round(tmp_datDs2$N[m])==0){
+          if(k==1){
+            rasterImage(sk_re_op,tmp_x2[m]-0.03,tmp_y2[m]-0.04,tmp_x2[m]+0.03,tmp_y2[m]+0.04)
+          }
+          if(k==2){
+            rasterImage(sk_re_fi,tmp_x2[m]-0.03,tmp_y2[m]-0.04,tmp_x2[m]+0.03,tmp_y2[m]+0.04)
+          }
+        }
+        if(round(tmp_datDr2$N[m])>0){
+          if(k==1){
+            points(x=tmp_x1[m],y=tmp_y1[m],col="dodgerblue",bg="white",pch=pchs[k],cex=1.5,lwd=2)
+          }
+          if(k==2){
+            points(x=tmp_x1[m],y=tmp_y1[m],col="dodgerblue",bg="dodgerblue",pch=pchs[k],cex=1.5,lwd=2)
+          }
+        }
+        if(is.na(tmp_datDs2$N[m])==FALSE&round(tmp_datDs2$N[m])>0){
+          if(k==1){
+            points(x=tmp_x2[m],y=tmp_y2[m],col="firebrick",bg="white",pch=pchs[k],cex=1.5,lwd=2)
+          }
+          if(k==2){
+            points(x=tmp_x2[m],y=tmp_y2[m],col="firebrick",bg="firebrick",pch=pchs[k],cex=1.5,lwd=2)
+          }
+        }
+      }
+    }
+  }
+}
+
+dev.off()
+
+```
+
+***
+
+Code to produce Figure 2
+
+```{r Fig 2}
+
+pdf("DDgraph.pdf",width=14,height=10,paper='special')
+
+par(mfrow=c(2,2),mar=c(4,5,2,2),xpd=FALSE)
+
+m1<-matrix(1,nr=10,nc=10)
+m2<-matrix(2,nr=10,nc=10)
+m3<-matrix(3,nr=10,nc=10)
+m4<-matrix(4,nr=10,nc=10)
+m<-rbind(cbind(m1,m2),cbind(m3,m4))
+m_y<-rbind(m,matrix(5,nr=1,nc=20))
+m_xy<-cbind(m_y,matrix(6,nr=21,nc=5))
+
+layout.matrix <- matrix(c(2, 1, 0, 3), nrow = 2, ncol = 2)
+
+layout(m_xy) # Widths of the two columns
+
+##Density-dependent transmission
+
+for(i in 1:length(vir)){
+  for(j in 1:length(trans)){
+    if(j==1){
+      par(mar=c(4,6,2,2))
+    }
+    if(j==2){
+      par(mar=c(4,3,2,5))
+    }
+    tmp_datDr<-fulldat[fulldat$Beta==trans[j]&fulldat$Phi==vir[i]&fulldat$DD_type=="R",]
+    tmp_datDs<-fulldat[fulldat$Beta==trans[j]&fulldat$Phi==vir[i]&fulldat$DD_type=="S",]
+    plot(NULL,xlim=c(0.15,0.85),ylim=c(0,1),las=1,ylab=ifelse(j==1,"Demographic Competence",""),xlab=ifelse(i==2,"Host Survival Rate",""),cex.lab=1.8,cex.axis=1.3)
+    l1=ifelse(i==1,"HIGH VIRULENCE","LOW VIRULENCE")
+    l2=ifelse(j==1,"LOW TRANSMISSIBILITY","HIGH TRANSMISSIBILITY")
+    text(x=0.5,y=0.97,labels=l1,cex=2)
+    text(x=0.5,y=0.9,labels=l2,cex=2)
+    mtext(text=ifelse(i==1&j==1,"a)",ifelse(i==1&j==2,"b)",ifelse(i==2&j==1,"c)","d)"))),side=3,line=-0.1,at=0.05,cex=1.5)
+    par(xpd=NA)
+    if(i==2){
+    polygon(x=c(0.15,0.25,0.25,0.15),y=c(-0.2,-0.2,-0.255,-0.255),col="black")
+    polygon(x=c(0.75,0.85,0.85,0.75),y=c(-0.2,-0.2,-0.255,-0.255),col="black")
+    text(x=0.2,y=-0.23,"FAST",col="white",font=2)
+    text(x=0.8,y=-0.23,"SLOW",col="white",font=2)
+    arrows(x0=0.3,y0=-0.23,x1=0.7,y1=-0.23,length=0.1,angle=30,code=3,col="black")
+    
+    if(j==2){
+      lines(x=c(1.075,1.275),y=c(1.5,1.5),col="dodgerblue",lty=1,lwd=2)
+      lines(x=c(1.075,1.275),y=c(1.25,1.25),col="dodgerblue",lty=2,lwd=2)
+      lines(x=c(1.075,1.275),y=c(1,1),col="firebrick",lty=1,lwd=2)
+      lines(x=c(1.075,1.275),y=c(0.75,0.75),col="firebrick",lty=2,lwd=2)
+
+      points(x=1.175,y=1.5,pch=21,col="dodgerblue",bg="dodgerblue",lwd=2,cex=2.5)
+      points(x=1.175,y=1.25,pch=21,col="dodgerblue",bg="white",lwd=2,cex=2.5)
+      points(x=1.175,y=1,pch=21,col="firebrick",bg="firebrick",lwd=2,cex=2.5)
+      points(x=1.175,y=0.75,pch=21,col="firebrick",bg="white",lwd=2,cex=2.5)
+      
+      text(x=1.175,y=1.44,"Strong reproduction-based regulation",cex=1.7)
+      text(x=1.175,y=1.19,"Weak reproduction-based regulation",cex=1.7)
+      text(x=1.175,y=0.94,"Strong survival-based regulation",cex=1.7)
+      text(x=1.175,y=0.69,"Weak survival-based regulation",cex=1.7)
+
+      
+    }
+    
+    }
+    par(xpd=FALSE)
+    for(k in 1:length(dd)){
+      tmp_datDr2<-tmp_datDr[tmp_datDr$DD_int==dd[k],]
+      tmp_datDs2<-tmp_datDs[tmp_datDs$DD_int==dd[k],]
+      lines(x=tmp_datDr2$Host_Surv,y=tmp_datDr2$HC/100,col="dodgerblue",lty=ifelse(k==1,2,1))
+      lines(x=tmp_datDs2$Host_Surv,y=tmp_datDs2$HC/100,col="firebrick",lty=ifelse(k==1,2,1))
+      points(x=tmp_datDr2$Host_Surv,y=tmp_datDr2$HC/100,col="dodgerblue",bg=ifelse(k==1,"white","dodgerblue"),pch=pchs[k],cex=2,lwd=2)
+      points(x=tmp_datDs2$Host_Surv,y=tmp_datDs2$HC/100,col="firebrick",bg=ifelse(k==1,"white","firebrick"),pch=pchs[k],cex=2,lwd=2)
+    }
+  }
+}
+
+dev.off()
+
+```
+
+***
+***
+***
+
+###Here we provide code to plot the difference between host density-dependent survival and host density-dependent reproduction when pathogen transmission is density-dependent
+
+This is Fig. S5 in the paper
+
+```{r Code for Fig. S5}
+
+#Create dataframe containing information on the differences between the cases with host density-dependent reproduction and host density-dependent survival
+subdat1a<-fulldat[fulldat$DD_type=="S",]
+subdat1b<-fulldat[fulldat$DD_type=="R",]
+
+diffdat<-data.frame(subdat1a[,c(1,2,3,4,6)],sign(round(subdat1a$HC*10))+sign(round(subdat1b$HC*10)),(subdat1a$HC-subdat1b$HC)*10)
+#NB. We calculate competence in a host population of 1000 individuals here
+names(diffdat)[6]<-"HC_TRUE"
+names(diffdat)[7]<-"Diff"
+
+################################################
+################################################
+
+#Create color palette used for figure
+
+library(viridis)
+
+mn<-floor(min(diffdat$Diff,na.rm=T))
+mx<-ceiling(max(diffdat$Diff,na.rm=T))
+
+cols2<-colorRampPalette(c("chartreuse","white", "dark blue"))(length(seq(-mx,mx,1)))
+
+################################################
+################################################
+
+#Plot figure
+
+par(mfrow=c(4,3),mar=c(2,3,0,0),bg="white",fg="black",bty="n")
+for(j in c(9,8,7,6)){
+  for(ii in c(0.4,0.6,0.8)){
+    diffs1<-diffdat[diffdat$Host_Surv==ii&diffdat$DD_int==dds[j],]
+    par(xpd=FALSE)
+    plot(NULL,xlim=c(0,1),ylim=c(0.00575,0.00975),xaxt="n",yaxt="n",ylab="",xlab="")
+    for(i in 1:nrow(diffs1)){
+      if(diffs1$HC_TRUE[i]>0&is.na(diffs1$HC_TRUE[i])==FALSE){
+        polygon(x=c(rep(1-diffs1$Phi[i]+0.005,2),rep(1-diffs1$Phi[i]-0.005,2)),y=c(diffs1$Beta[i]-0.00025,diffs1$Beta[i]+0.00025,diffs1$Beta[i]+0.00025,diffs1$Beta[i]-0.00025),col=cols2[round(diffs1$Diff[i])+mx+1],border=NA,pch=15,cex=1,lwd=2)
+      }
+      if(diffs1$HC_TRUE[i]==0|is.na(diffs1$HC_TRUE[i])==TRUE){
+        polygon(x=c(rep(1-diffs1$Phi[i]+0.005,2),rep(1-diffs1$Phi[i]-0.005,2)),y=c(diffs1$Beta[i]-0.00025,diffs1$Beta[i]+0.00025,diffs1$Beta[i]+0.00025,diffs1$Beta[i]-0.00025),border=NA,col="gray46",pch=15,cex=1)
+      }
+    }
+    par(xpd=NA)
+    if(ii==0.4){
+      text(x=-0.09,y=0.00775,labels="Pathogen tranmissibility",cex=1.4,srt=90)
+      arrows(x0=-0.03,y0=0.00575,x1=-0.03,y1=0.00975,length=0.1,angle=25,lwd=1)
+    }
+    if(j==6){
+      text(x=0.5,y=0.0052,labels="Pathogen virulence",cex=1.4)
+      arrows(x0=0,y0=0.0055,x1=1,y1=0.0055,length=0.1,angle=25,lwd=1)
+    }
+  }
+}
+
+```
+
+***
+***
+
+###Here we produce a summary figure of the above results used as Fig 3 in the paper
+
+```{r Fig 3}
+
+#Define parameter values to use
+trans<-c(0.007,0.008,0.009)
+pol<-c(0.4,0.6,0.8)
+dd<-c(0.005,0.001)
+pchs<-c(21,21)
+dcols<-c("gold2","darkorange2","firebrick")
+
+par(mfrow=c(2,3),mar=c(5,5,2,2),xpd=FALSE)
+for(i in 1:length(dd)){
+  for(j in 1:length(pol)){
+    mart<-c(5,5,2,2)
+    par(mar=mart)
+    if(j==2){
+      mart[c(2,4)]<-c(3.5,3.5)
+      par(mar=mart)
+    }
+    if(j==3){
+      mart[c(2,4)]<-c(2,5)
+      par(mar=mart)
+    }
+    if(i==1){
+      mart[c(1,3)]<-c(2,5)
+      par(mar=mart)
+    }
+    tmp_diff<-diffdat[diffdat$Host_Surv==pol[j]&diffdat$DD_int==dd[i]&diffdat$TR_type=="D",]
+    plot(NULL,xlim=c(0,1),ylim=c(0,0.45),xaxt="n",las=1,ylab=ifelse(j==1,"Difference in Demographic Competence",""),xlab=ifelse(i==2,"Virulence",""),cex.lab=1.5,cex.axis=1.3)
+    axis(1, at=seq(0,1,0.5),labels=seq(0,1,0.5),cex.axis=1.3)
+    l1=ifelse(i==1,"STRONG HOST POPULATION REGULATION","WEAK HOST POPULATION REGULATION")
+    l2=ifelse(j==1,"FAST HOST",ifelse(j==2,"INTERMEDIATE HOST","SLOW HOST"))
+    text(x=1,y=0.44,labels=l1,adj=c(1,0.5),cex=1.2)
+    text(x=1,y=0.39,labels=l2,adj=c(1,0.5),cex=1.5)
+    for(k in 1:length(trans)){
+      tmp_diff2<-tmp_diff[tmp_diff$Beta==trans[k],]
+      lines(x=1-tmp_diff2$Phi,y=tmp_diff2$Diff/1000,col=dcols[k],lty=1,lwd=2)
+    }
+  }
+}
+
+par(xpd=NA)
+lines(c(-2.8,-2.5),c(1.1,1.1),col=dcols[1],lwd=4)
+lines(c(-1.6,-1.3),c(1.1,1.1),col=dcols[2],lwd=4)
+lines(c(-0.1,0.2),c(1.1,1.1),col=dcols[3],lwd=4)
+text(x=-2.45,y=1.1,labels="Low transmissibility",adj=c(0,0.5),cex=1.5)
+text(x=-1.25,y=1.1,labels="Intermediate transmissibility",adj=c(0,0.5),cex=1.5)
+text(x=0.25,y=1.1,labels="High transmissibility",adj=c(0,0.5),cex=1.5)
+par(xpd=FALSE)
+
+```
+
+***
+***
+***
+
+###Here we provide code to plot the difference between host density-dependent survival and host density-dependent reproduction when pathogen transmission is frequency-dependent
+
+This is Fig. 5 in the paper
+
+```{r Code for Fig 5}
+
+#Create dataframe containing information on the differences between the cases with host density-dependent reproduction and host density-dependent survival
+subdat2a<-fulldat_F[fulldat_F$DD_type=="S",]
+subdat2b<-fulldat_F[fulldat_F$DD_type=="R",]
+
+diffdat_F<-data.frame(subdat2a[,c(1,2,3,4,6)],sign(round(subdat2a$HC*10))+sign(round(subdat2b$HC*10)),(subdat2a$HC-subdat2b$HC)*10,round(subdat2a$N*10),round(subdat2b$N*10))
+#Competence in a Host population of 1000 individuals
+names(diffdat_F)[6]<-"HC_TRUE"
+names(diffdat_F)[7]<-"Diff"
+names(diffdat_F)[8]<-"Ns"
+names(diffdat_F)[9]<-"Nr"
+
+################################################
+################################################
+
+#Create color palette used for figure
+
+mn<-floor(min(diffdat_F$Diff,na.rm=T))
+mx<-ceiling(max(diffdat_F$Diff,na.rm=T))
+
+cols<-rev(cividis(length(seq(mn,mx,1))))
+
+cols2<-colorRampPalette(c("chartreuse","white", "dark blue"))(length(seq(-mx,mx,1)))
+
+################################################
+################################################
+
+#Plot figure
+
+par(mfrow=c(4,3),mar=c(2,3,0,0),bg="white",fg="black",bty="n")
+for(j in c(9,8,7,6)){
+  for(ii in c(0.4,0.6,0.8)){
+    diffs1<-diffdat_F[diffdat_F$Host_Surv==ii&diffdat_F$DD_int==dds[j],]
+    par(xpd=FALSE)
+    plot(NULL,xlim=c(0,1),ylim=c(0.00575,0.00975),xaxt="n",yaxt="n",ylab="",xlab="")
+    for(i in 1:nrow(diffs1)){
+      if(diffs1$HC_TRUE[i]>0&is.na(diffs1$HC_TRUE[i])==FALSE){
+        polygon(x=c(rep(1-diffs1$Phi[i]+0.005,2),rep(1-diffs1$Phi[i]-0.005,2)),y=c(diffs1$Beta[i]-0.00025,diffs1$Beta[i]+0.00025,diffs1$Beta[i]+0.00025,diffs1$Beta[i]-0.00025),col=cols2[round(diffs1$Diff[i])+mx+1],border=NA,pch=15,cex=1)
+      }
+      if(diffs1$HC_TRUE[i]==0|is.na(diffs1$HC_TRUE[i])==TRUE){
+        if((diffs1$Ns[i]==0|is.na(diffs1$Ns[i])==TRUE)&diffs1$Nr[i]==0){
+          polygon(x=c(rep(1-diffs1$Phi[i]+0.005,2),rep(1-diffs1$Phi[i]-0.005,2)),y=c(diffs1$Beta[i]-0.00025,diffs1$Beta[i]+0.00025,diffs1$Beta[i]+0.00025,diffs1$Beta[i]-0.00025),col="gray23",border=NA,pch=15,cex=1)
+        }
+        if(diffs1$Ns[i]>0|diffs1$Nr[i]>0){
+          polygon(x=c(rep(1-diffs1$Phi[i]+0.005,2),rep(1-diffs1$Phi[i]-0.005,2)),y=c(diffs1$Beta[i]-0.00025,diffs1$Beta[i]+0.00025,diffs1$Beta[i]+0.00025,diffs1$Beta[i]-0.00025),col="gray46",border=NA,pch=15,cex=1)
+        }
+      }
+    }
+    par(xpd=NA)
+    if(ii==0.4){
+      text(x=-0.09,y=0.00775,labels="Pathogen tranmissibility",cex=1.4,srt=90)
+      arrows(x0=-0.03,y0=0.00575,x1=-0.03,y1=0.00975,length=0.1,angle=25,lwd=1)
+    }
+    if(j==6){
+      text(x=0.5,y=0.0052,labels="Pathogen virulence",cex=1.4)
+      arrows(x0=0,y0=0.0055,x1=1,y1=0.0055,length=0.1,angle=25,lwd=1)
+    }
+  }
+}
+
+```
+
+***
+***
+***
+
+Here we provide code for the scale bare used in Fig 5 and Fig S5
+
+```{r scalebar 2}
+
+par(mfrow=c(1,1),bty="n")
+plot(x=seq(1,length(cols2)),y=rep(1,length(cols2)),xaxt="n",yaxt="n",cex=5,pch=15,col=rev(cols2))
+
+```
+
+***
+***
+***
+
+##End of code

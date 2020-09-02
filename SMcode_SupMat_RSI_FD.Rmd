@@ -1,0 +1,198 @@
+---
+title: "SupMat_RSI_FDtransmission"
+author: "Matthew Silk"
+date: "21/01/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+##An R script to simulate host-pathogen dynamics for a range of host life-history and demographic strategies and pathogen virulences and transmissibilities when pathogen transmission is frequency-dependent
+
+##Version from the supplementary materials with a new order of life-history events
+##REPRODUCE-SURVIVE-INFECT
+
+***
+
+####Load required R packages
+
+```{r Packages}
+library(boot)
+```
+
+***
+
+####Define parameters
+
+```{r Define_Parameters}
+
+#Host survival
+Sus<-seq(0.2,0.8,0.1)
+
+#Host recruitment rate
+Rs<-(1-Sus)/Sus
+
+#Disease-induced mortality
+phi<-seq(0,0.99,0.01)
+
+#Disease-induced change in reproductive output
+#not used in this model
+psi<-1
+
+#Beta (transmission probabilities)
+betas<-seq(0.6,0.95,0.05)
+
+#Required parameters density-dependent effect
+#t sets the value for the stable uninfected host population size
+t<-100
+dd.effs<-c(0.00001,0.000025,0.00005,0.0001,0.00025,0.0005,0.001,0.0025,0.005,0.01)
+r.adj<-1
+
+```
+
+***
+
+####Run Model
+
+The code saves results for each host life-history separately in the current working directory
+Results files are:
+1. Host population size for survival-based regulation
+2. Host population size for reproduction-based regulation
+3. Pathogen prevalence for survival-based regulation
+4. Pathogen prevalence for reproduction-based regulation
+
+```{r Define_Parameters}
+
+#Loop over host life-history strategies
+for(jjjj in 1:length(Sus)){
+
+#Select current host life-history parameters
+Su<-Sus[jjjj]
+R<-Rs[jjjj]
+
+#Set up array to store overall simulation results
+fRESULTS.PR.R<-array(0,dim=c(length(betas),length(phi),length(dd.effs)))
+fRESULTS.N.R<-array(0,dim=c(length(betas),length(phi),length(dd.effs)))
+fRESULTS.PR.S<-array(0,dim=c(length(betas),length(phi),length(dd.effs)))
+fRESULTS.N.S<-array(0,dim=c(length(betas),length(phi),length(dd.effs)))
+
+#Loop over strengths of host density-dependence
+for(jjj in 1:length(dd.effs)){
+  
+  #Select current strength of host density-dependence
+  dd.eff<-dd.effs[jjj]
+  
+  #Set up matrices to store results
+  t.results.pr.r<-matrix(0,nr=length(betas),nc=length(phi))
+  t.results.n.r<-matrix(0,nr=length(betas),nc=length(phi))
+  t.results.pr.s<-matrix(0,nr=length(betas),nc=length(phi))
+  t.results.n.s<-matrix(0,nr=length(betas),nc=length(phi))
+  
+  #Loop over pathogen transmissibilities
+  for(jj in 1:length(betas)){
+    
+    beta<-betas[jj]
+    
+    #Set up vectors to store individual simulation results
+    prev.R<-array(0,length(phi))
+    prev.S<-array(0,length(phi))
+    N.R<-array(0,length(phi))
+    N.S<-array(0,length(phi))
+    
+    #Loop over values for disease-induced mortality
+    for(j in 1:length(phi)){
+      
+      #Start individual simulation run
+      #X.R stores results for density-dependent recruitment of hosts
+      #X.S for density-dependent survival of hosts
+      #Start with 50 uninfected and 50 infected hosts
+      x.R<-array(0,dim=c(3,100000))
+      x.R[1:2,1]<-c(50,50)
+      x.R[3,1]<-sum(x.R[1:2,1])
+      x.S<-array(0,dim=c(3,100000))
+      x.S[1:2,1]<-c(50,50)
+      x.S[3,1]<-sum(x.S[1:2,1])
+      
+      for(i in 2:dim(x.R)[2]){
+        
+          tmp.r<-R-r.adj*(dd.eff*(x.R[3,i-1]-t))
+          if(tmp.r<0.00001){tmp.r<-0.00001}
+          tmp.su<-Su-dd.eff*(x.S[3,i-1]-t)
+          if(tmp.su>0.99999){tmp.su<-0.99999}
+          if(tmp.su<0.00001){tmp.su<-0.00001}
+          
+          #dd recruitment model
+          x.R[1,i]<-Su*(1-beta*(x.R[2,i-1]/x.R[3,i-1]))*x.R[1,i-1]+
+            Su*tmp.r*(1-beta*(x.R[2,i-1]/x.R[3,i-1]))*x.R[1,i-1]+
+            Su*tmp.r*psi*(1-beta*(x.R[2,i-1]/x.R[3,i-1]))*x.R[2,i-1]
+          x.R[2,i]<-Su*beta*(x.R[2,i-1]/x.R[3,i-1])*x.R[1,i-1]+
+            Su*tmp.r*(beta*(x.R[2,i-1]/x.R[3,i-1]))*x.R[1,i-1]+
+            Su*phi[j]*x.R[2,i-1]+
+            Su*tmp.r*psi*(beta*(x.R[2,i-1]/x.R[3,i-1]))*x.R[2,i-1]
+          x.R[3,i]<-sum(x.R[1:2,i])
+          
+          #dd survival model
+          x.S[1,i]<-tmp.su*(1-beta*(x.S[2,i-1]/x.S[3,i-1]))*x.S[1,i-1]+
+            tmp.su*R*(1-beta*(x.S[2,i-1]/x.S[3,i-1]))*x.S[1,i-1]+
+            tmp.su*phi[j]*R*psi*(1-beta*(x.S[2,i-1]/x.S[3,i-1]))*x.S[2,i-1]
+          x.S[2,i]<-tmp.su*beta*(x.S[2,i-1]/x.S[3,i-1])*x.S[1,i-1]+
+            tmp.su*R*(beta*(x.S[2,i-1]/x.S[3,i-1]))*x.S[1,i-1]+
+            tmp.su*phi[j]*x.S[2,i-1]+
+            tmp.su*R*psi*(beta*(x.S[2,i-1]/x.S[3,i-1]))*x.S[2,i-1]
+          x.S[3,i]<-sum(x.S[1:2,i]) 
+          
+          if(is.na(x.S[1,i])){x.S[1,i]<-0}
+          if(is.na(x.S[2,i])){x.S[2,i]<-0}
+          if(is.na(x.S[3,i])){x.S[3,i]<-0}
+          if(is.na(x.R[1,i])){x.R[1,i]<-0}
+          if(is.na(x.R[2,i])){x.R[2,i]<-0}
+          if(is.na(x.R[3,i])){x.R[3,i]<-0}
+        
+        
+      } #end loop over timesteps
+      
+      #Store results
+      prev.R[j]<-x.R[2,i]/x.R[3,i]
+      prev.S[j]<-x.S[2,i]/x.S[3,i]
+      N.R[j]<-x.R[3,i]
+      N.S[j]<-x.S[3,i]
+      
+    } # end loop over phi
+    
+    #Store results
+    t.results.pr.r[jj,]<-prev.R
+    t.results.pr.s[jj,]<-prev.S
+    t.results.n.r[jj,]<-N.R
+    t.results.n.s[jj,]<-N.S
+    
+    
+  } #end loop over Betas
+  
+  #Store results
+  fRESULTS.PR.R[,,jjj]<-t.results.pr.r
+  fRESULTS.PR.S[,,jjj]<-t.results.pr.s
+  fRESULTS.N.R[,,jjj]<-t.results.n.r
+  fRESULTS.N.S[,,jjj]<-t.results.n.s
+  
+  print(jjj) #print to update on code progress
+  
+} #end loop over host density-dependences
+
+#Save results for each host life-history separately
+#Results files are:
+#1. Host population size for survival-based regulation
+#2. Host population size for reproduction-based regulation
+#3. Pathogen prevalence for survival-based regulation
+#4. Pathogen prevalence for reproduction-based regulation
+saveRDS(fRESULTS.N.S, paste0("RSIfNS_",Su,".rds"))
+saveRDS(fRESULTS.N.R, paste0("RSIfNR_",Su,".rds"))
+saveRDS(fRESULTS.PR.S, paste0("RSIfPRS_",Su,".rds"))
+saveRDS(fRESULTS.PR.R, paste0("RSIfPRR_",Su,".rds"))
+
+} #end loop over host life-histories
+
+```
+
